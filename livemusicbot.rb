@@ -2,8 +2,9 @@
 
 # frozen_string_literal: true
 
-require 'faraday'
 require 'dotenv'
+require 'faraday'
+require 'optparse'
 
 Dotenv.load
 
@@ -113,7 +114,7 @@ def to_reddit_s(gig)
   "#{display_name} [[discuss](#{reddit_discussion_url})] [[view gig](#{lml_url})]"
 end
 
-if __FILE__ == $0
+def main(**options)
   puts 'Finding today\'s gigs...'
 
   lml_client = LmlClient.new
@@ -125,11 +126,16 @@ if __FILE__ == $0
     exit 0
   end
 
-  puts 'Posting to reddit...'
-
   subreddit = 'livemusicmelbourne'
   post_title = 'Today\'s gigs'
   post_text = gigs.map { |gig| to_reddit_s(gig) }.join("\n\n")
+
+  if options[:dryrun]
+    puts post_text
+    exit 0
+  end
+
+  puts 'Posting to reddit...'
 
   reddit_client = RedditClient.new
   reddit_client.fetch_access_token
@@ -137,4 +143,17 @@ if __FILE__ == $0
 
   puts 'Done!'
   puts 'I\'m off to the pub. Bye for now.'
+end
+
+if __FILE__ == $0
+  opts = {}
+  OptionParser.new do |parser|
+    parser.banner = "Usage: #{__FILE__} [OPTIONS]"
+    parser.on('-d', '--dry-run', 'Dry run - prints list of gigs to stdout, but doesn\'t post to reddit') do
+      opts[:dryrun] = true
+    end
+    parser.parse!
+  end
+
+  main(**opts.freeze)
 end

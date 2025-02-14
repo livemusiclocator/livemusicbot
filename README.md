@@ -5,7 +5,7 @@ A reddit bot for posting today's gigs
 ## Usage
 
 ```
-./livemusicbot.rb
+./livemusicbot.rb [OPTIONS]
 ```
 
 Fetches all of today's gigs for Melbourne using the Live Music Locator API
@@ -25,3 +25,9 @@ REDDIT_PASSWORD=secretpassword
 ```
 
 Once you've done that, it *should* just work.
+
+## Testing
+
+If you want to test it out, without actually posting to reddit, you can supply
+the `--dry-run` flag. It will print the gigs to stdout so that you can inspect
+them before posting.
