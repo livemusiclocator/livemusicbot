@@ -22,7 +22,7 @@ class LmlClient
 
   def initialize
     @conn ||= Faraday.new(url: HOSTNAME) do |f|
-        f.response(:json)
+      f.response(:json)
     end
   end
 
@@ -73,8 +73,8 @@ class RedditClient
 
     res = conn.post('/api/v1/access_token', {
       grant_type: 'password',
-        username: @username,
-        password: @password
+      username: @username,
+      password: @password
     })
 
     @access_token = res.body['access_token']
@@ -109,7 +109,7 @@ def to_reddit_s(gig)
   date = Date.parse(gig['date']).strftime('%a, %d %b %Y')
   display_name = "#{gig['name']} - #{gig['venue']['name']} - #{date}"
   lml_url = "https://lml.live/gigs/#{gig['id']}"
-  reddit_discussion_url = "https://old.reddit.com/r/livemusicmelbourne/submit?url=#{lml_url}&title=#{CGI.escape(display_name)}"
+  reddit_discussion_url = "https://reddit.com/r/livemusicmelbourne/submit?url=#{lml_url}&title=#{CGI.escape(display_name)}"
 
   "#{display_name} [[discuss](#{reddit_discussion_url})] [[view gig](#{lml_url})]"
 end
