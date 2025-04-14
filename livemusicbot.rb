@@ -129,6 +129,13 @@ def main(**options)
   subreddit = 'livemusicmelbourne'
   post_title = 'Today\'s gigs'
   post_text = gigs.map { |gig| to_reddit_s(gig) }.join("\n\n")
+  post_text << "\n\n"
+  post_text << 'Live Music Locator is a not-for-profit service designed to ' \
+    'make it possible to discover every gig playing at every venue across ' \
+    'every genre at any one time. This information will always be verified ' \
+    'and free, importantly supporting musicians, our small to medium live ' \
+    'music venues, and you the punters. More detailed gig information here: ' \
+    'https://lml.live/?dateRange=today'
 
   if options[:dryrun]
     puts post_text
