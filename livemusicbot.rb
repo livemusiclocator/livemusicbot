@@ -12,13 +12,6 @@ class LmlClient
   attr_reader :conn
 
   HOSTNAME = "https://api.lml.live"
-  ALLOWED_PERIODS = [
-    "default",
-    "today",
-    "next_seven_days",
-    "this_weekend",
-    "next_weekend"
-  ]
 
   def initialize
     @conn ||= Faraday.new(url: HOSTNAME) do |f|
@@ -26,29 +19,13 @@ class LmlClient
     end
   end
 
-  def index
-    @conn.get("gigs").body
-  end
+  def gigs(location: "melbourne")
+    today = Time.new
+    start_of_today = Time.new(today.year, today.month, today.day, 0, 0, 0)
 
-  def gigs(period: "today", location: "melbourne")
-    unless ALLOWED_PERIODS.include?(period)
-      raise ArgumentError, "Period must be one of #{ALLOWED_PERIODS.join(", ")}."
-    end
+    url = "/gigs/query?date_from=#{start_of_today}&date_to=#{start_of_today}&location=#{location}"
 
-    url = URI(index["links"][period]["href"])
-    url = with_location(url, location)
-
-    @conn.get(url.request_uri).body
-  end
-
-  private
-
-  # Substitutes out location in the URL as it defaults to castlemaine
-  def with_location(url, location)
-    query = CGI.parse(url.query)
-    query["location"] = location
-    url.query = URI.encode_www_form(query)
-    url
+    @conn.get(url).body
   end
 end
 
@@ -125,7 +102,7 @@ def main(**options)
   puts "Finding today's gigs..."
 
   lml_client = LmlClient.new
-  gigs = lml_client.gigs(period: "today", location: "melbourne")
+  gigs = lml_client.gigs(location: "melbourne")
 
   if gigs.empty?
     puts "No gigs for today :("
@@ -156,6 +133,7 @@ def main(**options)
   reddit_client.submit_post("self", subreddit, post_title, post_text)
 
   puts "Done!"
+  puts "You can check it out here: https://old.reddit.com/r/livemusicmelbourne"
   puts "I'm off to the pub. Bye for now."
 end
 
