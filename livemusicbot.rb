@@ -10,7 +10,7 @@ require_relative "reddit_client"
 Dotenv.load
 
 def main(opts)
-  puts "Finding today's gigs..."
+  puts "[#{Time.now}] Finding today's gigs...\n\n"
 
   lml_client = LmlClient.new
   gigs = lml_client.gigs(location: "melbourne")
