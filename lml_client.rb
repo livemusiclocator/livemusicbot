@@ -7,6 +7,7 @@ class LmlClient
   attr_reader :conn
 
   HOSTNAME = "https://api.lml.live"
+  REQUIRED_FIELDS = %w[id name date venue].freeze
 
   def initialize
     @conn ||= Faraday.new(url: HOSTNAME) do |f|
@@ -20,6 +21,19 @@ class LmlClient
 
     url = "/gigs/query?date_from=#{start_of_today}&date_to=#{start_of_today}&location=#{location}"
 
-    @conn.get(url).body.map { |gig| Gig.from_lml(gig) }
+    @conn.get(url).body.map do |gig|
+      REQUIRED_FIELDS.each do |field|
+        raise "Missing required field #{field}" unless gig[field]
+      end
+
+      fields = {
+        id: gig["id"],
+        name: gig["name"],
+        date: Date.parse(gig["date"]),
+        venue: gig["venue"]["name"]
+      }
+
+      Gig.new(**fields)
+    end
   end
 end

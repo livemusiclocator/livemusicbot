@@ -2,7 +2,9 @@
 
 # frozen_string_literal: true
 
+require "cgi"
 require "dotenv"
+require "erb"
 require "optparse"
 require_relative "lml_client"
 require_relative "reddit_client"
@@ -18,30 +20,21 @@ def main(opts)
   if gigs.empty?
     puts "No gigs for today :("
     puts "I'm off to the pub. Bye for now."
-
     exit 0
+  end
+
+  template = File.read(File.join(__dir__, "post.md.erb"))
+  erb = ERB.new(template, trim_mode: "-")
+  sanitize = lambda do |str|
+    str.gsub("`", "")
   end
 
   subreddit = "livemusicmelbourne"
   post_title = "Today's gigs"
-  post_text = String.new
-
-  gigs.each do |gig|
-    post_text << gig.to_reddit_s
-    post_text << "\n\n"
-  end
-
-  post_text << "\n\n"
-  post_text << "Live Music Locator is a not-for-profit service designed to " \
-    "make it possible to discover every gig playing at every venue across " \
-    "every genre at any one time. This information will always be verified " \
-    "and free, importantly supporting musicians, our small to medium live " \
-    "music venues, and you the punters. More detailed gig information here: " \
-    "https://lml.live/?dateRange=today"
+  post_text = erb.result(binding)
 
   if opts[:dryrun]
     puts post_text
-
     exit 0
   end
 

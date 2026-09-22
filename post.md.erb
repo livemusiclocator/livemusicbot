@@ -1,0 +1,11 @@
+<%# Note, there are two spaces at the end of each line. These are important! Yay
+markdown. See https://support.reddithelp.com/hc/en-us/articles/360043033952-Formatting-Guide#wiki_paragraphs_and_line_breaks
+for more details. %>
+<% gigs.each do |gig| -%>
+**<%= sanitize.call(gig.name) %>**  
+<%= sanitize.call(gig.venue) %> - <%= gig.date.strftime("%a, %d %b %Y") %>  
+[discuss](<%= gig.reddit_discussion_url %>) | [details](<%= gig.lml_url %>)  
+  
+<% end -%>
+  
+Live Music Locator is a not-for-profit service designed to make it possible to discover every gig playing at every venue across every genre at any one time. This information will always be verified and free, importantly supporting musicians, our small to medium live music venues, and you the punters. See more detailed gig information [here](https://lml.live/?dateRange=today).
